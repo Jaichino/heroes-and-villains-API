@@ -10,7 +10,7 @@ from sqlmodel import SQLModel, Field
 
 # Base class
 class PowersBase(SQLModel):
-    power_name: str
+    power_name: str = Field(unique=True)
     power_damage: int
 
 # Database model
