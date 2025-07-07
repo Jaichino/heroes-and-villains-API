@@ -1,0 +1,106 @@
+####################
+# Character's CRUD #
+####################
+
+# Imports
+from typing import Annotated
+from sqlmodel import Session, select
+from app.models.characters import Character
+
+
+class CharacterCrud():
+
+    # Create
+    @staticmethod
+    def create_character(*, session: Session, character: Character):
+        """
+            Method to create new characters
+
+            :param Session session: database session
+            :param Character character: Object Character
+            :return: The created Character
+        """
+        session.add(character)
+        session.commit()
+        session.refresh(character)
+        return character
+
+    # Read
+    @staticmethod
+    def read_characters(*, session: Session, character_id: int | None = None):
+        """
+            Method to read characters in database. Returns one character if
+            a character_id is provided
+
+            :param Session session: database session
+            :param int character_id: the character's ID
+            :return: a list of characters or a character
+        """
+        if not character_id:
+            query = select(Character)
+            result = session.exec(query).all()
+        
+        else:
+            query = select(Character).where(Character.character_id == character_id)
+            result = session.exec(query).first()
+
+        return result
+
+
+    @staticmethod
+    def update_character(
+        *, 
+        session: Session, 
+        character_id: int, 
+        args: dict
+    ):
+        '''
+            Method to update an existing character
+            
+            :param Session session: database session
+            :param int character_id: the character's ID
+            :param dict args: a dict with the Character fields to be updated
+            :return: the updated character
+        '''
+        character_update = session.get(Character, character_id)
+
+        if not character_update:
+            return None
+
+        if "name" in args:
+            character_update.name = args['name']
+        if "secret_name" in args:
+            character_update.secret_name = args["secret_name"]
+        if "age" in args:
+            character_update.age = args["age"]
+        
+        session.add(character_update)
+        session.commit()
+        session.refresh(character_update)
+
+        return character_update
+
+
+    @staticmethod
+    def delete_character(
+        *,
+        session: Session,
+        character_id: int
+    ):
+        '''
+            Method to delete a character
+
+            :param Session session: database session
+            :param int character_id: the character's ID
+            :return: the deleted character
+        '''
+
+        character_delete = session.get(Character, character_id)
+
+        if not character_delete:
+            return None
+        
+        session.delete(character_delete)
+        session.commit()
+        
+        return character_delete

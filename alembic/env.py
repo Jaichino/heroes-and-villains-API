@@ -7,8 +7,7 @@ from alembic import context
 
 from sqlmodel import SQLModel
 from app.db.database import engine
-from app.models.heroes import Hero
-from app.models.villains import Villain
+from app.models.characters import Character
 from app.models.powers import Powers
 
 # this is the Alembic Config object, which provides
