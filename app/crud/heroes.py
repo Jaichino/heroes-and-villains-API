@@ -8,9 +8,13 @@ class HeroCrud():
 
     @staticmethod
     def create_hero(*, session: Session, hero: Hero):
-        '''
-            Método para la creación de un nuevo heroe
-        '''
+        """
+            Method to create new heroes
+
+            :param Session session: database session
+            :param Hero hero: Object Hero
+            :return: The created Hero
+        """
         session.add(hero)
         session.commit()
         session.refresh(hero)
@@ -19,10 +23,14 @@ class HeroCrud():
 
     @staticmethod
     def read_heroes(*, session: Session, hero_id: int | None = None):
-        '''
-            Método para devolver heroes de la base de datos. Si se pasa
-            un hero_id, se devuelve únicamente el heroe con dicho id
-        '''
+        """
+            Method to read heroes in database. Returns one hero if
+            a hero_id is provided
+
+            :param Session session: database session
+            :param int hero_id: the hero's ID
+            :return: a list of heroes or a hero
+        """
         if not hero_id:
             query = select(Hero)
             result = session.exec(query).all()
@@ -42,7 +50,12 @@ class HeroCrud():
         args: dict
     ):
         '''
-            Método para la actualización de un heroe con determinado hero_id
+            Method to update an existing hero
+            
+            :param Session session: database session
+            :param int hero_id: the hero's ID
+            :param dict args: a dict with the Hero fields to be updated
+            :return: the updated hero
         '''
         hero_update = session.get(Hero, hero_id)
 
@@ -70,8 +83,11 @@ class HeroCrud():
         hero_id: int
     ):
         '''
-            Método para eliminar un determinado heroe con su
-            hero_id
+            Method to delete a hero
+
+            :param Session session: database session
+            :param int hero_id: the hero's ID
+            :return: the deleted hero
         '''
 
         hero_delete = session.get(Hero, hero_id)
