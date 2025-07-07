@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.db.database import create_db_and_tables
-from app.models import heroes, villains
+from app.models import heroes, villains, powers
 from app.routers import heroes, villains
 
 app = FastAPI()
