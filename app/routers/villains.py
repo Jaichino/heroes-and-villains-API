@@ -16,7 +16,7 @@ router = APIRouter(
 SessionDep = Annotated[Session, Depends(get_session)]
 
 
-# Villains creation endpoint
+# Villains create endpoint
 @router.post("/", response_model=VillainPublic, summary='Create new villains')
 async def create_villain(
     session: SessionDep,
