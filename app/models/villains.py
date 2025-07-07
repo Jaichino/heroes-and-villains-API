@@ -21,6 +21,8 @@ class VillainUpdate(SQLModel):
     secret_name: str | None = None
     age: int | None = None
 
+    model_config = {"extra":"forbid"}
+
 
 class VillainPublic(VillainBase):
     id: int
