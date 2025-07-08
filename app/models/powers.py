@@ -5,7 +5,11 @@
 
 ###################################################################################################
 # Imports
-from sqlmodel import SQLModel, Field
+from typing import TYPE_CHECKING
+from sqlmodel import SQLModel, Field, Relationship
+from app.models.character_power import CharacterPower
+if TYPE_CHECKING:
+    from app.models.characters import Character
 ###################################################################################################
 
 ###################################################################################################
@@ -20,6 +24,8 @@ class PowersBase(SQLModel):
 class Powers(PowersBase, table=True):
     power_id: int | None = Field(default=None, primary_key=True)
 
+    characters: list['Character'] = Relationship(
+        back_populates="powers", link_model=CharacterPower)
 
 # Request model
 class PowerCreate(PowersBase):

@@ -9,6 +9,7 @@ from sqlmodel import SQLModel
 from app.db.database import engine
 from app.models.characters import Character
 from app.models.powers import Powers
+from app.models.character_power import CharacterPower
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -3,8 +3,12 @@
 #########################################
 
 # Imports
-from sqlmodel import SQLModel, Field
+from typing import TYPE_CHECKING
+from sqlmodel import SQLModel, Field, Relationship
 from enum import Enum
+from app.models.character_power import CharacterPower
+if TYPE_CHECKING:
+    from app.models.powers import Powers
 
 
 # Models
@@ -22,6 +26,9 @@ class CharacterBase(SQLModel):
 # Database Model
 class Character(CharacterBase, table=True):
     character_id: int | None = Field(default=None, primary_key=True)
+
+    powers: list['Powers'] = Relationship(
+        back_populates="characters", link_model=CharacterPower)
 
 
 # Request model (forbid extra params)
