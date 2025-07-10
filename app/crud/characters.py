@@ -132,12 +132,14 @@ class CharacterCrud():
     @staticmethod
     def get_heroes_or_villains(
         session: Session,
-        character_type: str
+        character_type: str,
+        offset: int | None = None,
+        limit: int | None = None
     ) -> list[Character] | None:
         
         """
             Method to return all the heroes or all the villains from the database by passing the
-            character_type.
+            character_type. Includes optional parameters offset and limit to allow pagination.
 
             :param str character_type: the character's category (hero or villain)
             :return: a list of Character or None
@@ -149,7 +151,8 @@ class CharacterCrud():
         
         # Get the heroes or villains
         result = session.exec(
-            select(Character).where(Character.character_type == character_type)
+            select(Character).offset(offset).limit(limit)
+            .where(Character.character_type == character_type)
         ).all()
 
         # Return the result

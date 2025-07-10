@@ -32,7 +32,11 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 
 ###################################################################################################
-# Character create endpoint
+# Endpoints
+###################################################################################################
+
+###################################################################################################
+# Endpoint to create new characters
 @router.post(
         "/", 
         response_model=CharacterPublic, 
@@ -40,7 +44,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
         status_code=status.HTTP_201_CREATED,
         responses={
             status.HTTP_201_CREATED:{
-                "description":"Character successfully created!",
+                "description":"Created",
                 "content":{
                     "application/json":{
                         "example":{
@@ -67,7 +71,7 @@ async def create_character(
         })
     ]
 ):
-    """ Function to create a new character with a JSON body with the following
+    """ Function to create a new character by passsing a JSON body with the following
         parameters:
 
         - **name**: character's name
@@ -75,7 +79,7 @@ async def create_character(
         - **age** (opt): character's age
         - **character_type**: character's category (Hero or Villain)
     """
-    # Model validation for CharacterCreate
+    # Model validation for CharacterCreate (character)
     db_character = Character.model_validate(character)
 
     # Create and return the character
@@ -85,10 +89,37 @@ async def create_character(
 
 
 ###################################################################################################
-# Characters read endpoints
+# Endpoints to read characters
 
 # Get all the characters (with offset and limit query parameters)
-@router.get("/", response_model=list[CharacterPublic], summary="Get all the characters")
+@router.get(
+        "/", 
+        response_model=list[CharacterPublic], 
+        summary="Get all the characters",
+        responses={
+            status.HTTP_200_OK: {
+                "content":{
+                    "application/json":{
+                        "example": [{
+                            "name": "Captain America",
+                            "secret_name": "Steve Rogers",
+                            "age": 105,
+                            "character_type": "Hero",
+                            "character_id": 3
+                        },
+                        {
+                            "name": "Iron Man",
+                            "secret_name": "Tony Stark",
+                            "age": 36,
+                            "character_type": "Hero",
+                            "character_id": 1
+                        }]
+                    }
+                }
+            }
+        }
+)
+
 async def read_characters(
     session: SessionDep,
     offset: Annotated[int, Query()] = 0,
@@ -114,7 +145,35 @@ async def read_characters(
 
 
 # Get one character
-@router.get("/{character_id}", response_model=CharacterPublic, summary="Get one character")
+@router.get(
+        "/{character_id}", 
+        response_model=CharacterPublic, 
+        summary="Get one character",
+        responses={
+            status.HTTP_200_OK: {
+                "content": {
+                    "application/json": {
+                        "example": {
+                            "name": "Captain America",
+                            "secret_name": "Steve Rogers",
+                            "age": 105,
+                            "character_type": "Hero",
+                            "character_id": 3
+                        }
+                    }
+                }
+            },
+            status.HTTP_404_NOT_FOUND: {
+                "content": {
+                    "application/json": {
+                        "example": {
+                            "detail": "Character not found!"
+                        }
+                    }
+                }
+            }
+        }
+)
 async def read_character_id(
     session: SessionDep,
     character_id: int
@@ -142,22 +201,53 @@ async def read_character_id(
 @router.get(
         "/type/{character_type}",
         summary="Get all the heroes or all the villains",
-        response_model=list[CharacterPublic]
+        response_model=list[CharacterPublic],
+        response_model_exclude_none=True,
+        responses={
+            status.HTTP_200_OK: {
+                "content": {
+                    "application/json": {
+                        "example": [{
+                            "name": "Thanos",
+                            "secret_name": None,
+                            "age": None,
+                            "character_type": "Villain",
+                            "character_id": 13
+                        },
+                        {
+                            "name": "Venom",
+                            "secret_name": "Eddie Brock",
+                            "age": 38,
+                            "character_type": "Villain",
+                            "character_id": 14
+                        }]
+                    }
+                }
+            }
+        }
 )
 async def getall_heroes_or_villains(
     session: SessionDep,
-    character_type: str
+    character_type: str,
+    offset: Annotated[int, Query()] = 0,
+    limit: Annotated[int, Query()] = 10
 ) -> list[CharacterPublic]:
     
     """ Function to return all the heroes or all the villains from the database by passing the
         parameter character_type.
+        Offset and limit query parameters allow pagination  and limiting the number of records.
 
         - **character_type**: the clasification of the character (hero or villain)
+        - **offset**: int query parameter to allow pagination (default 0)
+        - **limit**: the maximum quantity of characters returned (default 10)
     """
 
     # Get the heroes or villains and return them
     characters = CharacterCrud.get_heroes_or_villains(
-        session=session, character_type=character_type
+        session=session, 
+        character_type=character_type,
+        offset=offset,
+        limit=limit
     )
 
     if characters is None:
@@ -171,14 +261,25 @@ async def getall_heroes_or_villains(
 
 
 ###################################################################################################
-# Character update endpoint
+# Endpoint to update a character
 @router.patch(
         "/{character_id}", 
         response_model=CharacterPublic, 
         summary="Update a character",
+        response_model_exclude_none=True,
         responses={
             status.HTTP_200_OK: {
-                "description": "Character successfully updated!"
+                "content": {
+                    "application/json": {
+                        "example": {
+                            "name": "Thanos",
+                            "secret_name": None,
+                            "age": 65,
+                            "character_type": "Villain",
+                            "character_id": 13
+                        }
+                    }
+                }
             }
         }
 )
@@ -188,15 +289,15 @@ async def update_character(
     character_update: Annotated[
         CharacterUpdate,
         Body(example={
-            "secret_name":"Steve",
-            "age": 100,
+            "age": 65,
         })
     ] 
 ):
     """ Function to update a character by passing their ID and a JSON body
-        with the fields to be modified
+        with only the fields to be modified.
 
         - **character_id**: character's ID.
+
         - **character_update**: JSON body with the fields to be modified:
             - **name** (opt): new character's name
             - **secret_name** (opt): new character's secret name
@@ -231,11 +332,12 @@ async def update_character(
 @router.delete(
         "/{character_id}", 
         response_model=CharacterPublic,
-        status_code=status.HTTP_202_ACCEPTED, 
+        status_code=status.HTTP_202_ACCEPTED,
+        response_model_exclude_none=True,
         summary="Delete a character",
         responses={
             status.HTTP_202_ACCEPTED:{
-                "description":"Character successfully deleted!",
+                "description": "Accepted",
                 "content":{
                     "application/json":{
                         "example":{
@@ -248,7 +350,6 @@ async def update_character(
                     }
                 }},
             status.HTTP_404_NOT_FOUND:{
-                "description":"Character not found!",
                 "content":{
                     "application/json":{
                         "example":{
@@ -261,28 +362,28 @@ async def update_character(
 async def delete_character(
     session: SessionDep,
     character_id: int
-):
+) -> CharacterPublic:
+    
     """
         Function to delete a character by passing their ID.
 
         - **character_id**: character's ID
     """
     # Delete the character
-    response = CharacterCrud.delete_character(
+    deleted_character = CharacterCrud.delete_character(
         session=session,
         character_id=character_id
     )
 
     # If delete_character returns None, raise a 404 not found status code
-    if response is None:
+    if deleted_character is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail= "Character not found!"
         )
     
     # Return the deleted character
-    return JSONResponse(
-        status_code=status.HTTP_202_ACCEPTED,
-        content=jsonable_encoder(response)
-    )
+    return deleted_character
+###################################################################################################
+
 ###################################################################################################
