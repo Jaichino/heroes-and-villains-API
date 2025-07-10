@@ -13,7 +13,6 @@ from app.db.database import get_session
 from app.crud.character_power import CharacterPowerCrud
 from app.models.powers import PowerPublic, Powers
 from app.models.characters import Character
-
 ###################################################################################################
 
 
@@ -40,7 +39,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_201_CREATED: {
-            "description": "Successful Response",
+            "description": "Created",
             "content": {
                 "application/json":{
                     "example":{
@@ -120,12 +119,18 @@ async def assing_power(
             "content": {
                 "application/json":{
                     "example": {
-                        "character_id": 1,
-                        "powers": [{
-                        "power_name": "Super Strenght",
-                        "power_damage": "400",
-                        "power_id": 6
-                    }]}
+                        "character": {
+                        "character_id": 11,
+                        "character_name": "Spiderman"
+                        },
+                        "powers": [
+                            {
+                                "power_damage": 320,
+                                "power_id": 7,
+                                "power_name": "Web Shooting"
+                            }
+                        ]
+                    }
                 }
             }
         },
@@ -165,10 +170,16 @@ async def read_characters_powers(
             detail="Character not found!"
         )
     
+    # Get the character
+    character = session.get(Character, character_id)
+    
     # Return the powers
     return JSONResponse(
         content={
-            "character_id": character_id,
+            "character": {
+                "character_id": character.character_id,
+                "character_name": character.name
+            },
             "powers": jsonable_encoder(powers)
         }
     )
