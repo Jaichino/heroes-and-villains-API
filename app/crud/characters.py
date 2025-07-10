@@ -36,17 +36,25 @@ class CharacterCrud():
     ###############################################################################################
     # Read
     @staticmethod
-    def read_characters(*, session: Session, character_id: int | None = None):
+    def read_characters(
+        *, 
+        session: Session, 
+        character_id: int | None = None,
+        offset: int | None = None,
+        limit: int | None = None
+    ):
         """
             Method to read characters in database. Returns one character if
             a character_id is provided
 
             :param Session session: database session
             :param int character_id: the character's ID
+            :param int offset: an integer parameter for pagination
+            :param int limit: the maximum number of characters returned
             :return: a list of characters or a character
         """
         if not character_id:
-            query = select(Character)
+            query = select(Character).offset(offset).limit(limit)
             result = session.exec(query).all()
         
         else:

@@ -6,7 +6,7 @@
 ###################################################################################################
 # Imports
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi import APIRouter, Depends, HTTPException, status, Body, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from sqlmodel import Session
@@ -87,16 +87,29 @@ async def create_character(
 ###################################################################################################
 # Characters read endpoints
 
-# Get all the characters
+# Get all the characters (with offset and limit query parameters)
 @router.get("/", response_model=list[CharacterPublic], summary="Get all the characters")
 async def read_characters(
-    session: SessionDep
+    session: SessionDep,
+    offset: Annotated[int, Query()] = 0,
+    limit: Annotated[int, Query()] = 10
 ):
     """
-        Function to return all the characters in the database
+        Function to return all the characters in the database with the optional query
+        parameters offset and limit for pagination. The limit parameter is setted in
+        10 by default, and the offset is setted in 0.
+
+        - **offset**: int query param for pagination
+        - **limit**: the maximum quantity of characters returned
     """
-    # Get and return all the characters
-    characters = CharacterCrud.read_characters(session=session, character_id=None)
+    # Get and return the characters
+    characters = CharacterCrud.read_characters(
+        session=session, 
+        character_id=None,
+        offset=offset,
+        limit=limit
+    )
+
     return characters
 
 
