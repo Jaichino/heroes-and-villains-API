@@ -86,6 +86,8 @@ async def create_character(
 
 ###################################################################################################
 # Characters read endpoints
+
+# Get all the characters
 @router.get("/", response_model=list[CharacterPublic], summary="Get all the characters")
 async def read_characters(
     session: SessionDep
@@ -98,6 +100,7 @@ async def read_characters(
     return characters
 
 
+# Get one character
 @router.get("/{character_id}", response_model=CharacterPublic, summary="Get one character")
 async def read_character_id(
     session: SessionDep,
@@ -112,7 +115,7 @@ async def read_character_id(
     character = CharacterCrud.read_characters(session=session, character_id=character_id)
     
     # If read_characters returns None, raise a 404 not found status code
-    if not character_id:
+    if not character:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Character not found!"
@@ -120,6 +123,37 @@ async def read_character_id(
     
     # Return the character
     return character
+
+
+# Get all the heroes or all the villains
+@router.get(
+        "/type/{character_type}",
+        summary="Get all the heroes or all the villains",
+        response_model=list[CharacterPublic]
+)
+async def getall_heroes_or_villains(
+    session: SessionDep,
+    character_type: str
+) -> list[CharacterPublic]:
+    
+    """ Function to return all the heroes or all the villains from the database by passing the
+        parameter character_type.
+
+        - **character_type**: the clasification of the character (hero or villain)
+    """
+
+    # Get the heroes or villains and return them
+    characters = CharacterCrud.get_heroes_or_villains(
+        session=session, character_type=character_type
+    )
+
+    if characters is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="character_type must be 'hero' or 'villain'"
+        )
+
+    return characters
 ###################################################################################################
 
 

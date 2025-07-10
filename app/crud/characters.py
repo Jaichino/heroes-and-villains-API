@@ -2,14 +2,20 @@
 # Character's CRUD #
 ####################
 
+
+###################################################################################################
 # Imports
 from typing import Annotated
 from sqlmodel import Session, select
+from pydantic import ValidationError
 from app.models.characters import Character
+###################################################################################################
 
-
+###################################################################################################
+###################################################################################################
 class CharacterCrud():
 
+    ###############################################################################################
     # Create
     @staticmethod
     def create_character(*, session: Session, character: Character):
@@ -24,7 +30,10 @@ class CharacterCrud():
         session.commit()
         session.refresh(character)
         return character
+    ###############################################################################################
 
+
+    ###############################################################################################
     # Read
     @staticmethod
     def read_characters(*, session: Session, character_id: int | None = None):
@@ -45,8 +54,10 @@ class CharacterCrud():
             result = session.exec(query).first()
 
         return result
+    ###############################################################################################
 
 
+    ###############################################################################################
     @staticmethod
     def update_character(
         *, 
@@ -79,8 +90,10 @@ class CharacterCrud():
         session.refresh(character_update)
 
         return character_update
+    ###############################################################################################
 
-
+    
+    ###############################################################################################
     @staticmethod
     def delete_character(
         *,
@@ -104,3 +117,36 @@ class CharacterCrud():
         session.commit()
         
         return character_delete
+    ###############################################################################################
+
+
+    ###############################################################################################
+    @staticmethod
+    def get_heroes_or_villains(
+        session: Session,
+        character_type: str
+    ) -> list[Character] | None:
+        
+        """
+            Method to return all the heroes or all the villains from the database by passing the
+            character_type.
+
+            :param str character_type: the character's category (hero or villain)
+            :return: a list of Character or None
+        """
+
+        ## Validate the character type
+        if character_type not in ('hero', 'villain'):
+            return None
+        
+        # Get the heroes or villains
+        result = session.exec(
+            select(Character).where(Character.character_type == character_type)
+        ).all()
+
+        # Return the result
+        return result
+    ###############################################################################################
+
+###################################################################################################
+###################################################################################################
