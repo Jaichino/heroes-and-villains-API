@@ -8,6 +8,9 @@ from sqlmodel import Session, select
 from app.models.powers import Powers, PowerUpdate
 ###################################################################################################
 
+
+###################################################################################################
+###################################################################################################
 class PowersCrud:
 
 ###################################################################################################
@@ -37,24 +40,37 @@ class PowersCrud:
 # READ
     @staticmethod
     def read_powers(
+        *,
         session: Session,
-        power_id: int | None = None
+        power_id: int | None = None,
+        offset: int | None = None,
+        limit: int | None = None
     ) -> list[Powers] | Powers:
         
         """ Method to return all the powers in the database or only one power
-            by passing its power_id.
+            by passing its power_id. The optional parameters offset and limit
+            allow pagination and limiting the results.
 
             :param Session session: database session
             :param int (opt) power_id: the power's ID
+            :param int (opt) offset: parameter for pagination
+            :param int (opt) limit: the maximum number of powers returned
             :return: list of objects Powers or a object Powers
         """
 
         # Verify if the user give a power_id and return the result
-        if power_id:
-            resultado = session.exec(select(Powers)).all()
+
+        # All results (or the defined with limit)
+        if not power_id:
+            resultado = session.exec(
+                select(Powers).offset(offset).limit(limit)
+            ).all()
         
+        # Only one result
         else:
-            resultado = session.exec(select(Powers).where(Powers.power_id == power_id)).first()
+            resultado = session.exec(
+                select(Powers).where(Powers.power_id == power_id)
+            ).first()
 
         return resultado
 ###################################################################################################
@@ -123,4 +139,7 @@ class PowersCrud:
         session.commit()
 
         return power_to_delete
+###################################################################################################
+
+###################################################################################################
 ###################################################################################################

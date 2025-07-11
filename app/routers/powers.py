@@ -5,7 +5,7 @@
 ###################################################################################################
 # Imports
 from typing import Annotated
-from fastapi import APIRouter, Depends, status, HTTPException, Body
+from fastapi import APIRouter, Depends, status, HTTPException, Body, Query
 from sqlmodel import Session
 from app.db.database import engine, get_session
 from app.models.powers import Powers, PowerCreate, PowerPublic, PowerUpdate
@@ -81,6 +81,115 @@ async def create_power(
     power_create = PowersCrud.create_power(session=session, power=power_db)
 
     return power_create
+###################################################################################################
+
+
+###################################################################################################
+# Endpoint to get all the powers
+@router.get(
+        "/",
+        response_model=list[PowerPublic],
+        status_code=status.HTTP_200_OK,
+        summary="Get the powers",
+        responses= {
+            status.HTTP_200_OK: {
+                "content": {
+                    "application/json": {
+                        "example": [
+                            {
+                                "power_name": "Time Manipulation",
+                                "power_damage": 100,
+                                "power_id": 3
+                            },
+                            {
+                                "power_name": "Repulsor Blast",
+                                "power_damage": 250,
+                                "power_id": 5
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+)
+async def read_all_powers(
+    session: SessionDep,
+    offset: Annotated[int, Query()] = 0,
+    limit: Annotated[int, Query()] = 10
+) -> list[PowerPublic]:
+    
+    """ Function to get the powers from the database, with optional query parameters offset and
+        limit.
+
+        - **offset**: int query parameter for pagination (default = 0)
+        - **limit**: the maximum number of powers returned (default = 10)
+    """
+
+    # Get the powers and return them
+    powers = PowersCrud.read_powers(
+        session=session,
+        power_id = None,
+        offset=offset,
+        limit=limit
+    )
+
+    return powers
+
+
+# Endpoint to get only one power
+@router.get(
+        "/{power_id}",
+        response_model=PowerPublic,
+        summary="Get one power",
+        responses={
+            status.HTTP_200_OK: {
+                "content": {
+                    "application/json": {
+                        "example": {
+                            "power_name": "Time Manipulation",
+                            "power_damage": 100,
+                            "power_id": 3
+                        }
+                    }
+                }
+            },
+            status.HTTP_404_NOT_FOUND: {
+                "description": "Not Found",
+                "content": {
+                    "application/json": {
+                        "example": {
+                            "detail": "Couldn't get the power with the given power_id"
+                        }
+                    }
+                }
+            }
+        }
+)
+async def get_one_power(
+    session: SessionDep,
+    power_id: int
+) -> PowerPublic:
+    
+    """ Function to get only one power by passing its power_id
+
+        - **power_id**: the power's ID
+    """
+
+    # Get the power
+    power = PowersCrud.read_powers(
+        session=session,
+        power_id=power_id
+    )
+
+    # Raise 404 if the power is None (couldn't get the power with power_id)
+    if power is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Couldn't get the power with the given power_id"
+        )
+
+    # Return the power
+    return power
 ###################################################################################################
 
 
