@@ -29,7 +29,11 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 
 ###################################################################################################
-# Power create endpoint
+# Endpoints
+###################################################################################################
+
+###################################################################################################
+# Endpoint to create new powers
 @router.post(
     "/",
     response_model=PowerPublic,
@@ -37,7 +41,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
     status_code=status.HTTP_201_CREATED,
     responses={
         201: {
-            "description": "Power successfully created!",
+            "description": "Accepted",
             "content":{
                 "application/json":{
                     "example":{
@@ -63,32 +67,32 @@ async def create_power(
     ]
 ) -> PowerPublic:
     
-    """ Function to create a new power by passing a PowerCreate JSON body with
-        the fields:
+    """ Function to create a new power by passing a JSON body with the following
+        fields:
 
         - **power_name (str)**: the power's name
         - **power_damage (int)**: the power's damage (between 0 and 1000)
     """
 
-    # Validate the PowerCreate model
+    # Validate the PowerCreate (power) model
     power_db = Powers.model_validate(power)
 
     # Create the power and return it
     power_create = PowersCrud.create_power(session=session, power=power_db)
 
     return power_create
+###################################################################################################
 
 
 ###################################################################################################
-# Update power endpoint
+# Endpoint to update powers
 @router.patch(
     "/{power_id}",
     response_model=PowerPublic,
     status_code=status.HTTP_200_OK,
     summary="Update a power",
     responses={
-        200: {
-            "description": "Power successfully updated!",
+        status.HTTP_200_OK: {
             "content": {
                 "application/json":{
                     "example": {
@@ -99,11 +103,11 @@ async def create_power(
             }
         },
 
-        404: {
-            "description": "Power not found!",
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Not Found",
             "content":{
                 "application/json":{
-                    "example":{"detail":"Power not found"}
+                    "example": {"detail":"Power not found"}
                 }
             }
         }
@@ -121,12 +125,13 @@ async def update_power(
             }
         )
     ]
-):
-    """ Function to update a power by passing its power_id and a PowerUpdate JSON body
+) -> PowerPublic:
+    
+    """ Function to update a power by passing its power_id and a JSON body
         with the fields to be modified.
 
         - **power_id (int)**: the power's ID
-        - **power_update**: a PowerUpdate object with the following optional fields:
+        - **power_update**: Request body with the fields:
 
             - *power_name (str)*: the power's name
             - *power_damage (int)*: the power's damage 
@@ -142,11 +147,11 @@ async def update_power(
         power_update=power_update_dict
     )
 
-    # Raise an exception if update_power returns None
+    # Raise an exception if power_to_update is None
     if power_to_update is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Power with ID={power_id} not found!"
+            detail="Power not found!"
         )
     
     # Return the updated power
@@ -155,14 +160,14 @@ async def update_power(
 
 
 ###################################################################################################
-# Delete power endpoint
+# Endpoint to delete a power
 @router.delete(
     "/{power_id}",
     response_model=PowerPublic,
     status_code=status.HTTP_202_ACCEPTED,
     summary="Delete a power",
     responses={
-        202: {  "description": "Power successfully deleted",
+        status.HTTP_202_ACCEPTED: {  "description": "Accepted",
                 "content": {
                     "application/json": {
                         "example": {
@@ -173,7 +178,7 @@ async def update_power(
                     }
                 }
         },
-        404: {
+        status.HTTP_404_NOT_FOUND: {
             "description": "Not Found",
             "content":{
                 "application/json":{
