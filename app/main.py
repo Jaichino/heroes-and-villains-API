@@ -14,33 +14,39 @@ from app.routers import characters, powers, character_power, admin, login
 ###################################################################################################
 # API configuration
 description = """
-This API allows you to do the following things:
+This API allows you to manage a universe of heroes and villains, their powers, and the relationships 
+between them.
+
+### Security
+
+The API implements authentication using OAuth2 Password Bearer with JWT tokens.
+Endpoints that modify data (i.e., POST and DELETE) are protected and require a valid token to access.
 
 ### Characters
 
-You will be able to:
+You can:
 
-* **Create new characters**: You can create heroes and villains
-* **Read existing characters**: You can get all the characters or only one of them
-* **Update character's properties**: You can update any of the character's attributes
-* **Delete characters**: You can also delete a character
+* **Create new characters**: Add new heroes or villains to the database.
+* **Read existing characters**: Get a list of all characters or fetch a specific one by ID.
+* **Update character's properties**: Modify the attributes of any character.
+* **Delete characters**: Remove characters from the database.
 
 ### Powers
 
-This section allows you to:
+You can:
 
-* **Create new powers**: You can create new powers with their respective damages
-* **Read powers**: You can get all the powers or only one.
-* **Update powers**: You can update any of the power's attributes
-* **Delete powers**: You can delete powers
+* **Create new powers**: Add new abilities with their corresponding damage values.
+* **Read powers**:  Get a list of all powers or fetch a specific one by ID.
+* **Update powers**: Modify power attributes such as name or damage.
+* **Delete powers**: Remove powers from the database.
 
-### Character's Powers
+### Character Powers
 
-And here, you can:
+You can:
 
-* **Asign a power** to a character
-* **Read the powers** of a certain character
-* **Delete a power** of a certain character
+* **Asign a power**: Link an existing power to a character.
+* **Read the powers**: View all powers associated with a specific character.
+* **Delete a power**: Detach a power from a character.
 """
 
 app = FastAPI(
