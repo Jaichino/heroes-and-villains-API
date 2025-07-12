@@ -13,6 +13,7 @@ from sqlmodel import Session
 from app.db.database import get_session
 from app.models.characters import CharacterCreate, CharacterPublic, CharacterUpdate, Character
 from app.crud.characters import CharacterCrud
+from app.auth.auth import get_current_user
 ####################################################################################################
 
 
@@ -38,7 +39,8 @@ SessionDep = Annotated[Session, Depends(get_session)]
 ###################################################################################################
 # Endpoint to create new characters
 @router.post(
-        "/", 
+        "/",
+        dependencies=[Depends(get_current_user)],
         response_model=CharacterPublic, 
         summary="Create a new character",
         status_code=status.HTTP_201_CREATED,

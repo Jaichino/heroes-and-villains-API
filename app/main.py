@@ -7,7 +7,7 @@
 from fastapi import FastAPI, status
 from app.db.database import create_db_and_tables
 from app.models import characters, powers, character_power, users
-from app.routers import characters, powers, character_power, admin
+from app.routers import characters, powers, character_power, admin, login
 ###################################################################################################
 
 
@@ -67,6 +67,7 @@ app.include_router(characters.router)
 app.include_router(powers.router)
 app.include_router(character_power.router)
 app.include_router(admin.router)
+app.include_router(login.router)
 ###################################################################################################
 
 

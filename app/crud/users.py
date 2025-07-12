@@ -4,7 +4,7 @@
 
 ###################################################################################################
 # Imports
-from sqlmodel import Session
+from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
 from app.models.users import User, UserIn, UserOut
 from app.auth.hashing import hash_password
@@ -47,4 +47,31 @@ class UserCrud:
         except IntegrityError:
             session.rollback()
             return None
+###################################################################################################
+
+
+###################################################################################################
+# Get user hashed password
+    @staticmethod
+    def get_hashed_password(session: Session, username: str) -> str | None:
+
+        """ Method to get a user's hashed_password by passing the username
+
+            :param Session session: database session
+            :param str username: the user's username
+            :return: the hashed password (str)
+        """
+
+        # Get the user
+        user = session.exec(
+            select(User).where(User.username == username)
+        ).first()
+
+        # Return None if the user doesn't exist
+        if user is None:
+            return None
+        
+        # Get the hashed password and return it
+        hashed_password = user.hash_password
+        return hashed_password
 ###################################################################################################
