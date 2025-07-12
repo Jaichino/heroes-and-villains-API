@@ -11,6 +11,7 @@ from sqlmodel import Session
 from app.db.database import get_session
 from app.models.users import User, UserIn, UserOut
 from app.crud.users import UserCrud
+from app.auth.auth import get_current_user
 ####################################################################################################
 
 
@@ -18,7 +19,8 @@ from app.crud.users import UserCrud
 # Router configuration
 router = APIRouter(
     prefix="/admin",
-    tags=["Admin"]
+    tags=["Admin"],
+    dependencies=[Depends(get_current_user)]
 )
 ###################################################################################################
 

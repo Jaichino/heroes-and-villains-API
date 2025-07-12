@@ -10,6 +10,7 @@ from sqlmodel import Session
 from app.db.database import engine, get_session
 from app.models.powers import Powers, PowerCreate, PowerPublic, PowerUpdate
 from app.crud.powers import PowersCrud
+from app.auth.auth import get_current_user
 ###################################################################################################
 
 
@@ -36,6 +37,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 # Endpoint to create new powers
 @router.post(
     "/",
+    dependencies=[Depends(get_current_user)],
     response_model=PowerPublic,
     summary="Create a new power",
     status_code=status.HTTP_201_CREATED,
@@ -272,6 +274,7 @@ async def update_power(
 # Endpoint to delete a power
 @router.delete(
     "/{power_id}",
+    dependencies=[Depends(get_current_user)],
     response_model=PowerPublic,
     status_code=status.HTTP_202_ACCEPTED,
     summary="Delete a power",

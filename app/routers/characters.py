@@ -332,7 +332,8 @@ async def update_character(
 ###################################################################################################
 # Character delete endopoint
 @router.delete(
-        "/{character_id}", 
+        "/{character_id}",
+        dependencies=[Depends(get_current_user)], 
         response_model=CharacterPublic,
         status_code=status.HTTP_202_ACCEPTED,
         response_model_exclude_none=True,

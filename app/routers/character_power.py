@@ -13,6 +13,7 @@ from app.db.database import get_session
 from app.crud.character_power import CharacterPowerCrud
 from app.models.powers import PowerPublic, Powers
 from app.models.characters import Character
+from app.auth.auth import get_current_user
 ###################################################################################################
 
 
@@ -39,6 +40,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 # Endpoint to assing a power to a character
 @router.post(
     "/{power_id}",
+    dependencies=[Depends(get_current_user)],
     summary="Assign a power to a character",
     status_code=status.HTTP_201_CREATED,
     responses={
@@ -194,6 +196,7 @@ async def read_characters_powers(
 # Endpoint to delete a character's power
 @router.delete(
     "/{power_id}",
+    dependencies=[Depends(get_current_user)],
     summary="Delete a character's power",
     status_code=status.HTTP_202_ACCEPTED,
     responses={
