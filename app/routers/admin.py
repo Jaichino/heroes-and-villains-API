@@ -6,7 +6,7 @@
 ###################################################################################################
 # Imports
 from typing import Annotated
-from fastapi import APIRouter, Depends, status, Body
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlmodel import Session
 from app.db.database import get_session
 from app.models.users import User, UserIn, UserOut
@@ -71,6 +71,13 @@ async def create_user(
 
     # Create the user
     new_user = UserCrud.create_user(session=session, user=user)
+
+    # Raise Exception if the username already exists
+    if new_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="The username already exists!"
+        )
 
     # Return the user
     return new_user
