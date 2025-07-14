@@ -10,7 +10,7 @@ load_dotenv(dotenv_path=env_path)
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Creación de engine
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL, echo=False) # In development, turn echo=True
 
 # Creación de sesión
 def get_session():
