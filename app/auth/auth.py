@@ -59,7 +59,7 @@ def get_access_token(data: dict, expiration: timedelta | None = None):
 
 ###################################################################################################
 # Security scheme
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 ###################################################################################################
 
 ###################################################################################################
