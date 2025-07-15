@@ -14,9 +14,9 @@ The API is publicly deployed on Railway:
 
 You can explore the full interactive documentation at:
 
-- **Swagger UI**: [`https://heroes-and-villains-api-production.up.railway.app/docs`](https://heroes-and-villains-api-production.up.railway.app/docs)
+> 📚 **Swagger UI**: [`https://heroes-and-villains-api-production.up.railway.app/docs`](https://heroes-and-villains-api-production.up.railway.app/docs)
 
-> ⚠️ Endpoints that modify data (`POST`, `DELETE`, etc.) are protected with OAuth2 + JWT authentication.
+⚠️ Endpoints that create or delete data (`POST`, `DELETE`) are protected with OAuth2 + JWT authentication.
 
 ---
 
@@ -26,14 +26,14 @@ You can explore the full interactive documentation at:
 
 - Create new heroes and villains *(JWT required)*
 - Get all characters or a specific one
-- Update character data *(JWT required)*
+- Update character data
 - Delete characters *(JWT required)*
 
 ### 💥 Powers
 
 - Add new powers *(JWT required)*
 - View all powers or specific one
-- Update power attributes *(JWT required)*
+- Update power attributes
 - Delete powers *(JWT required)*
 
 ### 🔗 Character Powers
