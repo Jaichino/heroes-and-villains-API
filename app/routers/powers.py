@@ -36,7 +36,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 ###################################################################################################
 # Endpoint to create new powers
 @router.post(
-    "/",
+    "",
     dependencies=[Depends(get_current_user)],
     response_model=PowerPublic,
     summary="Create a new power",
@@ -89,7 +89,7 @@ async def create_power(
 ###################################################################################################
 # Endpoint to get all the powers
 @router.get(
-        "/",
+        "",
         response_model=list[PowerPublic],
         status_code=status.HTTP_200_OK,
         summary="Get the powers",

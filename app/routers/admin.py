@@ -38,7 +38,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 ###################################################################################################
 # Endpoint to create a user
 @router.post(
-    "/",
+    "",
     response_model=UserOut,
     summary="Create a new user",
     status_code=status.HTTP_201_CREATED,

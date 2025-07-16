@@ -118,7 +118,7 @@ async def assing_power(
 ###################################################################################################
 # Endpoint to get a character's powers
 @router.get(
-    "/",
+    "",
     responses={
         status.HTTP_200_OK: {
             "description": "Successful Response",

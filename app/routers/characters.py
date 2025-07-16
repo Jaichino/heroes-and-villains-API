@@ -39,7 +39,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 ###################################################################################################
 # Endpoint to create new characters
 @router.post(
-        "/",
+        "",
         dependencies=[Depends(get_current_user)],
         response_model=CharacterPublic, 
         summary="Create a new character",
@@ -95,7 +95,7 @@ async def create_character(
 
 # Get all the characters (with offset and limit query parameters)
 @router.get(
-        "/", 
+        "", 
         response_model=list[CharacterPublic], 
         summary="Get all the characters",
         responses={

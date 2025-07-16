@@ -40,7 +40,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 ###################################################################################################
 # Endpoint to login users
 @router.post(
-    "/",
+    "",
     status_code=status.HTTP_200_OK,
     summary="Login to access",
     responses={
